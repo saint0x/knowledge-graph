@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bufio"
+  "bufio"
 	"fmt"
-  "github.com/yourusername/knowledge-graph/knowledgegraph"
 	"log"
 	"os"
+
+  "github.com/saint0x/knowledge-graph"
 )
 
 func main() {

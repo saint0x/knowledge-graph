@@ -1,6 +1,4 @@
-// pkg/knowledgegraph/notes.go
-
-package notes
+package main
 
 import (
   "context"
@@ -8,7 +6,7 @@ import (
   "strings"
 
   "github.com/sashabaranov/go-openai"
-  "sqlite"
+  "database/sqlite"
 )
 
 // Note represents a note in the knowledge graph
