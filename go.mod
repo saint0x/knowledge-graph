@@ -1,8 +1,5 @@
-module knowledge-graph
+module main
 
-go 1.21.7
+go 1.21.6
 
-require (
-    github.com/sashabaranov/go-openai v1.23.0
-    github.com/saint0x/knowledge-graph v1.23.0
-)
+require github.com/sashabaranov/go-openai v1.23.0 

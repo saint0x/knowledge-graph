@@ -26,22 +26,8 @@ type Graph struct {
 }
 
 // BuildGraph builds the knowledge graph from notes
-func BuildGraph() (Graph, error) {
+func BuildGraph(notes []Note) (Graph, error) {
 	var graph Graph
-
-	// Update notes in the database with extracted concepts
-	err := UpdateNotesWithConcepts()
-	if err != nil {
-		log.Printf("Failed to update notes with concepts: %v", err)
-		return graph, err
-	}
-
-	// Retrieve all notes from the database
-	notes, err := GetNotesFromDB()
-	if err != nil {
-		log.Printf("Failed to retrieve notes: %v", err)
-		return graph, err
-	}
 
 	// Create nodes for each note
 	for _, note := range notes {
@@ -89,9 +75,64 @@ func calculateWeight(concepts1, concepts2 []string) float64 {
 	return float64(commonConcepts) / float64(len(concepts1)+len(concepts2)-commonConcepts)
 }
 
-// GenerateInsight generates insights from the knowledge graph
-func GenerateInsight(graph Graph) (string, error) {
-	// TODO: Implement insight generation based on the knowledge graph
-	// For now, return a placeholder insight
-	return "Placeholder insight from knowledge graph", nil
+// PersistNode persists a node in the knowledge graph database
+func PersistNode(node knowledgegraph.Node) error {
+	// Insert the node into the database
+	err := sqlite.InsertNode(node.ID, node.Text, strings.Join(node.Concepts, ", "))
+	if err != nil {
+		log.Printf("Failed to persist node: %v", err)
+		return err
+	}
+	return nil
+}
+
+// PersistEdge persists an edge in the knowledge graph database
+func PersistEdge(edge knowledgegraph.Edge) error {
+	// Insert the edge into the database
+	err := sqlite.InsertEdge(edge.SourceID, edge.TargetID, edge.Weight)
+	if err != nil {
+		log.Printf("Failed to persist edge: %v", err)
+		return err
+	}
+	return nil
+}
+
+// PersistVertex persists a vertex in the knowledge graph database
+func PersistVertex(vertex knowledgegraph.Vertex) error {
+	// Insert the vertex into the database
+	err := sqlite.InsertVertex(vertex.NodeID, vertex.TargetID, vertex.Concept)
+	if err != nil {
+		log.Printf("Failed to persist vertex: %v", err)
+		return err
+	}
+	return nil
+}
+
+// PersistGraphData persists the collected nodes, edges, and vertices in the knowledge graph database
+func PersistGraphData(nodes []knowledgegraph.Node, edges []knowledgegraph.Edge, vertices []knowledgegraph.Vertex) error {
+	// Persist nodes
+	for _, node := range nodes {
+		err := PersistNode(node)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Persist edges
+	for _, edge := range edges {
+		err := PersistEdge(edge)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Persist vertices
+	for _, vertex := range vertices {
+		err := PersistVertex(vertex)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
